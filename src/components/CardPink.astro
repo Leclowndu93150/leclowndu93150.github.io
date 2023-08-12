@@ -74,4 +74,15 @@ interface Props {
         border-radius: 2%;
 		max-height: 300px;
     }
+
+	.link-card:not(:hover):not(:focus-within) {
+		background-position: 100%;
+		background-image: none;
+		transition: background-position 1.5s cubic-bezier(0.22, 1, 0.36, 1);
+	}
+
+	.link-card:not(:hover):not(:focus-within) h2 {
+		color: inherit;
+		transition: color 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+	}
 </style>

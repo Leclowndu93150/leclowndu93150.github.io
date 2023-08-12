@@ -3,9 +3,10 @@ interface Props {
 	title: string;
 	body: string;
 	href: string;
-	image: string;
+	image?: string;
 	height?: string;
 	width?: string; // Add a prop for the custom class
+	text?:string;
   }
   const { href, title, body, image, height, width,text} = Astro.props;
 ---

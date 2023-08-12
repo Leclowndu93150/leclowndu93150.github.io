@@ -1,11 +1,15 @@
 ---
 interface Props {
-	title: string;
-	body: string;
-	href: string;
+	title?: string;
+	body?: string;
+	href?: string;
+	image?: string;  // Add this line
+  	height?: number; // Add this line
+  	width?: number;  // Add this line
+	text?:string;
 }
 
-const { href, title, body,image,height,width } = Astro.props;
+const { href, title, body,image,height,width,text } = Astro.props;
 ---
 
 <li class="link-card">
@@ -19,6 +23,7 @@ const { href, title, body,image,height,width } = Astro.props;
 		  <span></span>
 		</h2>
 		<p>{body}</p>
+		<text>{text}</text>
 	  </div>
 	</a>
   </li>

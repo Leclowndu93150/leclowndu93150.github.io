@@ -1,5 +1,5 @@
 {
-  "name": "c-users-karim-desktop-leclowndu93150-github-io",
+  "name": "c-users-karim-desktop-astro",
   "type": "module",
   "version": "0.0.1",
   "scripts": {
@@ -10,6 +10,6 @@
     "astro": "astro"
   },
   "dependencies": {
-    "astro": "^2.10.7"
+    "astro": "^2.10.5"
   }
 }

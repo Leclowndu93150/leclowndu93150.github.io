@@ -1,10 +1,9 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Card from '../components/Card.astro';
-import Card2 from '../components/Card3.astro';
 ---
 
-<Layout title="Leclowndu93150's Website">
+<Layout title="Welcome to Astro.">
 	<main>
 			<path
 				fill-rule="evenodd"
@@ -25,49 +24,31 @@ import Card2 from '../components/Card3.astro';
 				</linearGradient>
 			</defs>
 		</svg>
-		<img class="pfp" src="pringles.gif" alt="pringlespfp">
-		<h1>Leclowndu93150</h1>
+		<h1>Welcome to <span class="text-gradient">Astro</span></h1>
 		<p class="instructions">
-			&#127464&#127477 Idiot trying to <code>Learn</code> how to <code>Code</code>.<br />
-			&#10084;&#65039; Modded Minecraft
+			To get started, open the directory <code>src/pages</code> in your project.<br />
+			<strong>Code Challenge:</strong> Tweak the "Welcome to Astro" message above.
 		</p>
 		<ul role="list" class="link-card-grid">
 			<Card
-  			href="https://mymodpacklist.mantikafasi.dev/profile/Leclowndu93150"
-  			title="My Modpack List"
-  			body="Here you can find a list of most modpacks i have ever  played."
-  			image="/pickaxe.png"
-			height="30"
-			width="30"
-			/>
-
-			<Card
-				href="https://github.com/Leclowndu93150"
-				title="Github"
-				image="/github.png"
-				height="30"
-				width="30"
-				body="I don't do much so my page is pretty empty"
-			/>
-			<Card2
-				href="./secret/"
-				title="Secret Area"
-				body="This is my secret little area, i will probably put much more efforts into it compared to this page."
+				href="https://docs.astro.build/"
+				title="Documentation"
+				body="Learn how Astro works and explore the official API docs."
 			/>
 			<Card
-				href=""
+				href="https://astro.build/integrations/"
+				title="Integrations"
+				body="Supercharge your project with new frameworks and libraries."
+			/>
+			<Card
+				href="https://astro.build/themes/"
+				title="Themes"
+				body="Explore a galaxy of community-built starter themes."
+			/>
+			<Card
+				href="https://astro.build/chat/"
 				title="Community"
-				image="/discord.png"
-				height="28"
-				width="40"
-				body="I have a Discord community that is pretty active, be careful they bite ! "
-			/>
-			<Card
-  			href="./characters/"
-  			title="Based Video Game Characters"
-  			image=""
-			height="30"
-			width="30"
+				body="Come say hi to our amazing Discord community. ❤️"
 			/>
 		</ul>
 	</main>
@@ -83,7 +64,6 @@ import Card2 from '../components/Card3.astro';
 		font-size: 20px;
 		line-height: 1.6;
 	}
-
 	h1 {
 		font-size: 4rem;
 		font-weight: 700;
@@ -122,13 +102,4 @@ import Card2 from '../components/Card3.astro';
 		gap: 2rem;
 		padding: 0;
 	}
-
-	.pfp{
-		display: block;
-  		margin-left: auto;
-  		margin-right: auto;
-  		width: 50%;
-		border-radius: 50%;
-	}
-
 </style>

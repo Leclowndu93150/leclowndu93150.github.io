@@ -1,10 +1,12 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import Card from '../components/Card.astro';
+import Card from '../components/CardPink.astro';
+import Card2 from '../components/Card2.astro';
 ---
 
-<Layout title="Welcome to Astro.">
+<Layout title="UwU">
 	<main>
+		<link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/410/410192.png">
 			<path
 				fill-rule="evenodd"
 				clip-rule="evenodd"
@@ -24,33 +26,28 @@ import Card from '../components/Card.astro';
 				</linearGradient>
 			</defs>
 		</svg>
-		<h1>Welcome to <span class="text-gradient">Astro</span></h1>
-		<p class="instructions">
-			To get started, open the directory <code>src/pages</code> in your project.<br />
-			<strong>Code Challenge:</strong> Tweak the "Welcome to Astro" message above.
-		</p>
+		<h1><span class="text-gradient">VTubers</span> area</h1>
+		
+        <div class="instructions" id="linkDiv" style="cursor: pointer;">
+            <img src="https://i.imgur.com/rUX6AVC.png" class="myqueen" alt="thequeen">
+            <h2>Houshou Marine</h2>
+            <text>She  is a female Japanese Virtual YouTuber associated with hololive.<br/>
+				Bebuting as part of its third generation of VTubers under the name of "hololive Fantasy"<br/>
+				She sings really well.
+            </text>
+          </div>
+          <Card2
+            title="Hololive"
+            href="https://myanimelist.net/profile/Leclowndu93150"
+            />
 		<ul role="list" class="link-card-grid">
 			<Card
-				href="https://docs.astro.build/"
-				title="Documentation"
-				body="Learn how Astro works and explore the official API docs."
-			/>
-			<Card
-				href="https://astro.build/integrations/"
-				title="Integrations"
-				body="Supercharge your project with new frameworks and libraries."
-			/>
-			<Card
-				href="https://astro.build/themes/"
-				title="Themes"
-				body="Explore a galaxy of community-built starter themes."
-			/>
-			<Card
-				href="https://astro.build/chat/"
-				title="Community"
-				body="Come say hi to our amazing Discord community. ❤️"
-			/>
-		</ul>
+                href="https://myanimelist.net/character/161286/Chizuru_Ichinose?q=mizuhara%20chizuru&cat=character"
+                image="https://www.nautiljon.com/images/perso/00/65/mizuhara_chizuru_19556.webp?1681834490"
+				title="Mizuhara Chizuru/Ichinose Chizuru"
+				body="She is a college student at Nerima University who is majoring in Literature. She currently lives in Room 204 of Royal Hills Nerima. She works as a rental girlfriend for an agency called Diamond under the alias Chizuru Mizuhara (水原 千鶴)."
+                />
+
 	</main>
 </Layout>
 
@@ -58,12 +55,14 @@ import Card from '../components/Card.astro';
 	main {
 		margin: auto;
 		padding: 1rem;
-		width: 800px;
+		width: 1100px;
 		max-width: calc(100% - 2rem);
 		color: white;
 		font-size: 20px;
 		line-height: 1.6;
+		
 	}
+
 	h1 {
 		font-size: 4rem;
 		font-weight: 700;
@@ -72,34 +71,90 @@ import Card from '../components/Card.astro';
 		margin-bottom: 1em;
 	}
 	.text-gradient {
-		background-image: var(--accent-gradient);
+		background-image: var(--accent-gradient2);
 		-webkit-background-clip: text;
 		-webkit-text-fill-color: transparent;
-		background-size: 400%;
+		background-size: 300%;
 		background-position: 0%;
 	}
-	.instructions {
+    .instructions {
 		margin-bottom: 2rem;
-		border: 1px solid rgba(var(--accent-light), 25%);
-		background: linear-gradient(rgba(var(--accent-dark), 66%), rgba(var(--accent-dark), 33%));
+		border: 1px solid rgba(var(--accent-light3), 25%);
+		background: linear-gradient(rgba(var(--accent3), 66%), rgba(var(--accent3), 33%));
 		padding: 1.5rem;
 		border-radius: 8px;
+		text-align: center; /* Center the content horizontally */
 	}
-	.instructions code {
-		font-size: 0.8em;
-		font-weight: bold;
-		background: rgba(var(--accent-light), 12%);
-		color: rgb(var(--accent-light));
-		border-radius: 4px;
-		padding: 0.3em 0.4em;
+
+	.myqueen {
+		display: block;
+		margin: 0 auto; /* Center the image horizontally */
+		max-width: 100%;
+        border-radius: 2%;
+        max-height: 400px;
 	}
-	.instructions strong {
-		color: rgb(var(--accent-light));
+	
+    .instructions img {
+		max-width: 100%; /* To ensure the image doesn't exceed its container */
 	}
+
+    .instructions strong {
+		color: rgb(var(--accent-light2));
+	}
+
+    .instructions h2{
+        margin: 0.5rem 0;
+    }
+
 	.link-card-grid {
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(24ch, 1fr));
 		gap: 2rem;
 		padding: 0;
 	}
+
+
+	.link-card-grid2 {
+    display: flex;
+    flex-wrap: nowrap; /* Prevent wrapping to new lines */
+    gap: 1rem;
+    padding: 0;
+    justify-content: center;
+    margin: 10px auto;
+    overflow-x: auto; /* Add horizontal scroll for small screens */
+}
+
+.link-card-grid2 > * {
+    flex: 0 0 auto; /* Disable shrinking to prevent cards from being hidden */
+    min-width: calc(20ch - 1rem); /* Adjust minimum width as needed */
+    width: calc(20ch - 1rem); /* Set the width to the same as minimum width */
+}
+
+	/* Add hover animation for .link-card2 */
+	.link-card2:hover,
+	.link-card2:focus-within {
+		background-position: 0;
+		background-image: var(--accent-gradient);
+		transition: background-position 1.5s cubic-bezier(0.22, 1, 0.36, 1), background-image 1.5s ease-out;
+	}
+
+	.link-card2:hover h2,
+	.link-card2:focus-within h2 {
+		color: rgb(var(--accent-light));
+		transition: color 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+	}
+
+	.quintuplets{
+		text-align: center;
+	}
+
 </style>
+
+<script>
+    const linkDiv = document.getElementById('linkDiv');
+    const link = 'https://virtualyoutuber.fandom.com/wiki/Houshou_Marine';
+    linkDiv.addEventListener('click', () => {
+      window.location.href = link;
+    });
+</script>
+

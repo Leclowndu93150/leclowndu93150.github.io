@@ -25,44 +25,26 @@ import Card2 from '../components/Card3.astro';
 				</linearGradient>
 			</defs>
 		</svg>
-		<img class="pfp" src="pringles.gif" alt="pringlespfp">
-		<h1>Leclowndu93150</h1>
-		<p class="instructions">
-			&#127464&#127477 Idiot trying to <code>Learn</code> how to <code>Code</code>.<br />
-			&#10084;&#65039; Modded Minecraft
-		</p>
-		<ul role="list" class="link-card-grid">
+		<div class="box">
+        <ul role="list" class="link-card-grid">
 			<Card
-  			href="https://mymodpacklist.mantikafasi.dev/profile/Leclowndu93150"
-  			title="My Modpack List"
-  			body="Here you can find a list of most modpacks i have ever  played."
-  			image="/pickaxe.png"
-			height="30"
-			width="30"
-			/>
-
-			<Card
-				href="https://github.com/Leclowndu93150"
-				title="Github"
-				image="/github.png"
+				href="../secret/"
+				title="UwU List"
+				image="https://cdn-icons-png.flaticon.com/512/410/410192.png"
 				height="30"
 				width="30"
-				body="Im starting to get more active since im working on an important project !"
+				body="I don't do much so my page is pretty empty"
 			/>
-			<Card2
-				href="./hub/"
-				title="The Hub"
-				body="This is where you can find my other pages"
-			/>
-			<Card
-				href=""
-				title="Community"
-				image="/discord.png"
-				height="28"
-				width="40"
-				body="I have a Discord community that is pretty active, be careful they bite ! "
-			/>
+            <Card
+            href="../vtubers/"
+            title="Vtubers List"
+            image="https://cdn-icons-png.flaticon.com/512/410/410192.png"
+            height="30"
+			width="30"
+            body="Here you can find most of the VTubers i came across and that i enjoyed watching."
+        />
 		</ul>
+        </div>
 	</main>
 </Layout>
 
@@ -75,6 +57,7 @@ import Card2 from '../components/Card3.astro';
 		color: white;
 		font-size: 20px;
 		line-height: 1.6;
+        
 	}
 
 	h1 {
@@ -111,17 +94,15 @@ import Card2 from '../components/Card3.astro';
 	}
 	.link-card-grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(24ch, 1fr));
-		gap: 2rem;
-		padding: 0;
+        grid-template-columns: repeat(auto-fit, minmax(24ch, 1fr));
+        gap: 2rem;
+        padding: 0;
+        margin-top: 40%;
 	}
 
-	.pfp{
-		display: block;
-  		margin-left: auto;
-  		margin-right: auto;
-  		width: 50%;
-		border-radius: 50%;
-	}
+    .box{
+        
+    }
+
 
 </style>

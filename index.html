@@ -170,14 +170,6 @@
         </div>
     </div>
 
-    <h3>Instructions for GitHub Pages</h3>
-    <ol>
-        <li>Fork this repository</li>
-        <li>Enable GitHub Pages in repository settings</li>
-        <li>Use the counter.html file with URL parameters like: <code>?num=123456&theme=moebooru</code></li>
-        <li>Embed using iframe or link directly to the SVG</li>
-    </ol>
-
     <p class="github">
         <a href="https://github.com/journey-ad/Moe-Counter" target="_blank">Original Project</a>
     </p>
@@ -222,15 +214,11 @@
                     themeSelect.appendChild(option);
                 });
                 
-                console.log(`Loaded ${availableThemes.length} themes:`, availableThemes);
-                
-                // Load theme previews (only load a few to avoid rate limits)
                 await loadThemePreviews();
                 
             } catch (error) {
                 console.error('Error loading themes:', error);
                 document.querySelector('#themes p').textContent = 'Error loading themes. Using fallback.';
-                // Fallback to some known themes
                 availableThemes = ['moebooru', 'gelbooru', 'asoul', 'minecraft', 'miku'];
                 const themeSelect = document.getElementById('theme');
                 themeSelect.innerHTML = '';
@@ -248,7 +236,10 @@
             const container = document.getElementById('theme_previews');
             container.innerHTML = '';
             
-            for (const theme of availableThemes) {
+            // Load previews for first 10 themes to avoid hitting rate limits
+            const themesToPreview = availableThemes.slice(0, 10);
+            
+            for (const theme of themesToPreview) {
                 const themeDiv = document.createElement('div');
                 themeDiv.className = 'theme-item';
                 
@@ -262,15 +253,26 @@
                 
                 container.appendChild(themeDiv);
                 
-                // Load theme data and generate preview
-                await loadThemeData(theme);
-                const previewSvg = await generateCounterSVG({
-                    num: '0123456789',
-                    theme: theme,
-                    padding: 0,
-                    scale: 0.8
-                });
-                previewContainer.innerHTML = previewSvg;
+                try {
+                    // Load theme data and generate preview
+                    await loadThemeData(theme);
+                    const previewSvg = await generateCounterSVG({
+                        num: '0123456789',
+                        theme: theme,
+                        padding: 0,
+                        scale: 0.8
+                    });
+                    previewContainer.innerHTML = previewSvg;
+                } catch (error) {
+                    previewContainer.innerHTML = `<p style="color: red;">Error loading theme</p>`;
+                    console.error(`Error loading theme ${theme}:`, error);
+                }
+            }
+            
+            if (availableThemes.length > 10) {
+                const moreDiv = document.createElement('div');
+                moreDiv.innerHTML = `<p><em>...and ${availableThemes.length - 10} more themes available in the selector above!</em></p>`;
+                container.appendChild(moreDiv);
             }
             
             document.querySelector('#themes p').style.display = 'none';
@@ -278,13 +280,20 @@
 
         // Load theme data for a specific theme
         async function loadThemeData(themeName) {
-            if (themeData[themeName]) return themeData[themeName];
+            if (themeData[themeName]) {
+                return themeData[themeName];
+            }
             
             themeData[themeName] = {};
             
             try {
                 const themeUrl = `${GITHUB_API_BASE}/${themeName}`;
                 const response = await fetch(themeUrl);
+                
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch theme ${themeName}: ${response.status}`);
+                }
+                
                 const files = await response.json();
                 
                 // Load digit images (0-9) and special images
@@ -294,23 +303,32 @@
                     file.name === '_end.gif'
                 );
                 
+                // Load each image file
                 for (const file of imageFiles) {
                     const char = file.name.replace('.gif', '');
                     const imageUrl = `${GITHUB_RAW_BASE}/${themeName}/${file.name}`;
                     
-                    // Convert to data URL
-                    const imageData = await imageToDataUrl(imageUrl);
-                    const dimensions = await getImageDimensions(imageData);
-                    
-                    themeData[themeName][char] = {
-                        width: dimensions.width,
-                        height: dimensions.height,
-                        data: imageData
-                    };
+                    try {
+                        // Convert to data URL
+                        const imageData = await imageToDataUrl(imageUrl);
+                        const dimensions = await getImageDimensions(imageData);
+                        
+                        themeData[themeName][char] = {
+                            width: dimensions.width,
+                            height: dimensions.height,
+                            data: imageData
+                        };
+                        
+                    } catch (err) {
+                        console.error(`Failed to load image ${themeName}/${file.name}:`, err);
+                    }
                 }
                 
             } catch (error) {
                 console.error(`Error loading theme ${themeName}:`, error);
+                // Don't leave partially loaded theme data
+                delete themeData[themeName];
+                throw error;
             }
             
             return themeData[themeName];
@@ -321,25 +339,43 @@
             return new Promise((resolve, reject) => {
                 const img = new Image();
                 img.crossOrigin = 'anonymous';
+                
                 img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    canvas.width = img.width;
-                    canvas.height = img.height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0);
-                    resolve(canvas.toDataURL('image/png'));
+                    try {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0);
+                        const dataUrl = canvas.toDataURL('image/png');
+                        resolve(dataUrl);
+                    } catch (err) {
+                        reject(new Error(`Canvas error for ${imageUrl}: ${err.message}`));
+                    }
                 };
-                img.onerror = reject;
+                
+                img.onerror = () => {
+                    reject(new Error(`Failed to load image: ${imageUrl}`));
+                };
+                
+                // Add timeout
+                setTimeout(() => {
+                    reject(new Error(`Timeout loading image: ${imageUrl}`));
+                }, 10000);
+                
                 img.src = imageUrl;
             });
         }
 
         // Get image dimensions
         async function getImageDimensions(dataUrl) {
-            return new Promise((resolve) => {
+            return new Promise((resolve, reject) => {
                 const img = new Image();
                 img.onload = () => {
                     resolve({ width: img.width, height: img.height });
+                };
+                img.onerror = () => {
+                    reject(new Error('Failed to get image dimensions'));
                 };
                 img.src = dataUrl;
             });
@@ -358,6 +394,12 @@
                 pixelated = '1',
                 darkmode = 'auto'
             } = params;
+
+            // Handle random theme selection
+            if (theme === 'random') {
+                theme = availableThemes[Math.floor(Math.random() * availableThemes.length)];
+                console.log(`Random theme selected: ${theme}`);
+            }
 
             // Ensure theme data is loaded
             await loadThemeData(theme);

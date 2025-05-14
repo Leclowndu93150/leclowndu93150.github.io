@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moe Counter - GitHub Pages</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bamboo.css">
+    <style>
+        html { scroll-padding: 50px 0; }
+        #main_title { margin-top: 0.5em; }
+        #themes { margin-top: 2em; }
+        #themes > p { margin: 0; }
+        #more_theme h3 { display: inline-block; margin: 0; cursor: pointer; }
+        #get { margin-bottom: 1em; }
+        #code { visibility: hidden; display: inline-block; margin-bottom: 1em; }
+        #result { display: block; max-width: 100%; }
+        .github { margin-top: 2em; }
+        code { word-break: break-all; }
+        .loading { color: #666; }
+        .error { color: red; margin-top: 10px; }
+        .success { color: green; margin-top: 10px; }
+        
+        input[type="checkbox"][role="switch"] {
+            height: 0; width: 0; visibility: hidden;
+        }
+        input[type="checkbox"][role="switch"] + label {
+            cursor: pointer; width: 3.6em; height: 1.8em; margin: 0;
+            background: grey; display: block; border-radius: 1.8em;
+            position: relative; transition: 0.3s;
+        }
+        input[type="checkbox"][role="switch"] + label:after {
+            content: ""; position: absolute; top: 0.1em; left: 0.1em;
+            width: 1.6em; height: 1.6em; background: #fff; border-radius: 1.6em;
+            transition: 0.3s;
+        }
+        input[type="checkbox"][role="switch"]:checked + label {
+            background: #4CAF50;
+        }
+        input[type="checkbox"][role="switch"]:checked + label:after {
+            left: calc(100% - 0.1em); transform: translateX(-100%);
+        }
+        
+        details > summary { list-style: none; }
+        details > summary::-webkit-details-marker,
+        details > summary::marker { display: none; }
+        summary::before {
+            border-bottom: 6px solid transparent;
+            border-left: 10px solid #333;
+            border-top: 6px solid transparent;
+            content: ""; display: inline-block; height: 0;
+            margin-right: 10px; position: relative; transition: 0.2s; width: 0;
+        }
+        details[open] summary::before { transform: rotate(90deg); }
+        
+        h2, h3, h4, h5 { margin: 1.5em 0 0.6em; }
+        .theme-item { margin: 1em 0; }
+        .theme-preview { max-width: 300px; height: auto; }
+        
+        @media screen and (min-width: 800px) {
+            body { max-width: min(90%, 800px); }
+        }
+    </style>
+</head>
+<body>
+    <h1 id="main_title">🎀 Moe Counter! 🎀</h1>
+
+    <h3>How to use</h3>
+    <p>Generate a custom counter image by specifying parameters directly in the URL. No server needed!</p>
+
+    <h5>Direct SVG URL</h5>
+    <code id="direct_url_example">https://yoursite.github.io/moe-counter/counter.html?num=123456&theme=moebooru</code>
+
+    <h5>Embed in your page</h5>
+    <code id="embed_example">&lt;iframe src="https://yoursite.github.io/moe-counter/counter.html?num=123456&theme=moebooru" width="200" height="50" frameborder="0"&gt;&lt;/iframe&gt;</code>
+
+    <details id="themes">
+        <summary id="more_theme">
+            <h3>Available Themes ✨</h3>
+        </summary>
+        <p class="loading">Loading themes...</p>
+        <div id="theme_previews"></div>
+    </details>
+
+    <h3>Counter Generator Tool</h3>
+    <div class="tool">
+        <table>
+            <thead>
+                <tr>
+                    <th>Parameter</th>
+                    <th>Description</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>num</code></td>
+                    <td>Number to display</td>
+                    <td><input id="num" type="number" value="123456" min="0" max="999999999999999"></td>
+                </tr>
+                <tr>
+                    <td><code>theme</code></td>
+                    <td>Visual theme</td>
+                    <td>
+                        <select id="theme">
+                            <option value="moebooru">moebooru</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td><code>padding</code></td>
+                    <td>Minimum digit length (1-16)</td>
+                    <td><input id="padding" type="number" value="7" min="1" max="16"></td>
+                </tr>
+                <tr>
+                    <td><code>offset</code></td>
+                    <td>Spacing between digits (-500 to 500)</td>
+                    <td><input id="offset" type="number" value="0" min="-500" max="500"></td>
+                </tr>
+                <tr>
+                    <td><code>scale</code></td>
+                    <td>Image scale (0.1 to 2.0)</td>
+                    <td><input id="scale" type="number" value="1" min="0.1" max="2" step="0.1"></td>
+                </tr>
+                <tr>
+                    <td><code>align</code></td>
+                    <td>Vertical alignment</td>
+                    <td>
+                        <select id="align">
+                            <option value="top">top</option>
+                            <option value="center">center</option>
+                            <option value="bottom">bottom</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td><code>pixelated</code></td>
+                    <td>Pixelated rendering</td>
+                    <td>
+                        <input id="pixelated" type="checkbox" role="switch" checked>
+                        <label for="pixelated"></label>
+                    </td>
+                </tr>
+                <tr>
+                    <td><code>darkmode</code></td>
+                    <td>Dark mode</td>
+                    <td>
+                        <select id="darkmode">
+                            <option value="auto">auto</option>
+                            <option value="1">yes</option>
+                            <option value="0">no</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td><code>prefix</code></td>
+                    <td>Prefix number (optional)</td>
+                    <td><input id="prefix" type="number" value="" min="0" max="999999"></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <button id="generate">Generate Counter</button>
+        <div id="message"></div>
+
+        <div style="margin-top: 20px;">
+            <code id="generated_url" style="display: none;"></code>
+            <br>
+            <div id="result_container" style="margin-top: 10px;"></div>
+        </div>
+    </div>
+
+    <h3>Instructions for GitHub Pages</h3>
+    <ol>
+        <li>Fork this repository</li>
+        <li>Enable GitHub Pages in repository settings</li>
+        <li>Use the counter.html file with URL parameters like: <code>?num=123456&theme=moebooru</code></li>
+        <li>Embed using iframe or link directly to the SVG</li>
+    </ol>
+
+    <p class="github">
+        <a href="https://github.com/journey-ad/Moe-Counter" target="_blank">Original Project</a>
+    </p>
+
+    <script>
+        // GitHub repository info
+        const GITHUB_API_BASE = 'https://api.github.com/repos/journey-ad/Moe-Counter/contents/assets/theme';
+        const GITHUB_RAW_BASE = 'https://raw.githubusercontent.com/journey-ad/Moe-Counter/master/assets/theme';
+        
+        let themeData = {};
+        let availableThemes = [];
+
+        // Load available themes from GitHub
+        async function loadThemes() {
+            try {
+                const response = await fetch(GITHUB_API_BASE);
+                const themes = await response.json();
+                
+                availableThemes = themes
+                    .filter(item => item.type === 'dir')
+                    .map(item => item.name)
+                    .sort(); // Sort themes alphabetically
+                
+                // Update theme selector
+                const themeSelect = document.getElementById('theme');
+                themeSelect.innerHTML = '';
+                
+                // Add random option
+                const randomOption = document.createElement('option');
+                randomOption.value = 'random';
+                randomOption.textContent = '✨ Random Theme';
+                themeSelect.appendChild(randomOption);
+                
+                // Add all themes
+                availableThemes.forEach(theme => {
+                    const option = document.createElement('option');
+                    option.value = theme;
+                    option.textContent = theme;
+                    if (theme === 'moebooru') {
+                        option.selected = true; // Default to moebooru
+                    }
+                    themeSelect.appendChild(option);
+                });
+                
+                console.log(`Loaded ${availableThemes.length} themes:`, availableThemes);
+                
+                // Load theme previews (only load a few to avoid rate limits)
+                await loadThemePreviews();
+                
+            } catch (error) {
+                console.error('Error loading themes:', error);
+                document.querySelector('#themes p').textContent = 'Error loading themes. Using fallback.';
+                // Fallback to some known themes
+                availableThemes = ['moebooru', 'gelbooru', 'asoul', 'minecraft', 'miku'];
+                const themeSelect = document.getElementById('theme');
+                themeSelect.innerHTML = '';
+                availableThemes.forEach(theme => {
+                    const option = document.createElement('option');
+                    option.value = theme;
+                    option.textContent = theme;
+                    themeSelect.appendChild(option);
+                });
+            }
+        }
+
+        // Load theme previews
+        async function loadThemePreviews() {
+            const container = document.getElementById('theme_previews');
+            container.innerHTML = '';
+            
+            for (const theme of availableThemes) {
+                const themeDiv = document.createElement('div');
+                themeDiv.className = 'theme-item';
+                
+                const title = document.createElement('h5');
+                title.textContent = theme;
+                themeDiv.appendChild(title);
+                
+                // Generate preview with demo number
+                const previewContainer = document.createElement('div');
+                themeDiv.appendChild(previewContainer);
+                
+                container.appendChild(themeDiv);
+                
+                // Load theme data and generate preview
+                await loadThemeData(theme);
+                const previewSvg = await generateCounterSVG({
+                    num: '0123456789',
+                    theme: theme,
+                    padding: 0,
+                    scale: 0.8
+                });
+                previewContainer.innerHTML = previewSvg;
+            }
+            
+            document.querySelector('#themes p').style.display = 'none';
+        }
+
+        // Load theme data for a specific theme
+        async function loadThemeData(themeName) {
+            if (themeData[themeName]) return themeData[themeName];
+            
+            themeData[themeName] = {};
+            
+            try {
+                const themeUrl = `${GITHUB_API_BASE}/${themeName}`;
+                const response = await fetch(themeUrl);
+                const files = await response.json();
+                
+                // Load digit images (0-9) and special images
+                const imageFiles = files.filter(file => 
+                    file.name.match(/^\d\.gif$/) || 
+                    file.name === '_start.gif' || 
+                    file.name === '_end.gif'
+                );
+                
+                for (const file of imageFiles) {
+                    const char = file.name.replace('.gif', '');
+                    const imageUrl = `${GITHUB_RAW_BASE}/${themeName}/${file.name}`;
+                    
+                    // Convert to data URL
+                    const imageData = await imageToDataUrl(imageUrl);
+                    const dimensions = await getImageDimensions(imageData);
+                    
+                    themeData[themeName][char] = {
+                        width: dimensions.width,
+                        height: dimensions.height,
+                        data: imageData
+                    };
+                }
+                
+            } catch (error) {
+                console.error(`Error loading theme ${themeName}:`, error);
+            }
+            
+            return themeData[themeName];
+        }
+
+        // Convert image URL to data URL
+        async function imageToDataUrl(imageUrl) {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                img.crossOrigin = 'anonymous';
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0);
+                    resolve(canvas.toDataURL('image/png'));
+                };
+                img.onerror = reject;
+                img.src = imageUrl;
+            });
+        }
+
+        // Get image dimensions
+        async function getImageDimensions(dataUrl) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.onload = () => {
+                    resolve({ width: img.width, height: img.height });
+                };
+                img.src = dataUrl;
+            });
+        }
+
+        // Generate counter SVG
+        async function generateCounterSVG(params) {
+            let {
+                num = '0',
+                theme = 'moebooru',
+                padding = 7,
+                prefix = '',
+                offset = 0,
+                align = 'top',
+                scale = 1,
+                pixelated = '1',
+                darkmode = 'auto'
+            } = params;
+
+            // Ensure theme data is loaded
+            await loadThemeData(theme);
+            const currentTheme = themeData[theme];
+            
+            if (!currentTheme) {
+                throw new Error(`Theme ${theme} not found`);
+            }
+
+            // Convert parameters
+            offset = parseFloat(offset);
+            scale = parseFloat(scale);
+            padding = parseInt(padding);
+
+            // Prepare count array
+            let countStr = num.toString();
+            if (padding > 0) {
+                countStr = countStr.padStart(padding, '0');
+            }
+            const countArray = countStr.split('');
+
+            // Add prefix if provided
+            if (prefix !== '' && prefix >= 0) {
+                countArray.unshift(...prefix.toString().split(''));
+            }
+
+            // Add _start and _end if they exist
+            if (currentTheme['_start']) {
+                countArray.unshift('_start');
+            }
+            if (currentTheme['_end']) {
+                countArray.push('_end');
+            }
+
+            // Get unique characters for defs
+            const uniqueChars = [...new Set(countArray)];
+
+            let x = 0, maxHeight = 0;
+
+            // Generate defs section
+            const defs = uniqueChars.map(char => {
+                const charData = currentTheme[char];
+                if (!charData) return '';
+                
+                const width = charData.width * scale;
+                const height = charData.height * scale;
+                maxHeight = Math.max(maxHeight, height);
+
+                return `<image id="${char}" width="${width}" height="${height}" href="${charData.data}" />`;
+            }).join('\n    ');
+
+            // Generate image uses
+            const parts = countArray.map(char => {
+                const charData = currentTheme[char];
+                if (!charData) return '';
+                
+                const width = charData.width * scale;
+                const height = charData.height * scale;
+
+                let yOffset = 0;
+                if (align === 'center') {
+                    yOffset = (maxHeight - height) / 2;
+                } else if (align === 'bottom') {
+                    yOffset = maxHeight - height;
+                }
+
+                const use = `<use x="${x}"${yOffset ? ` y="${yOffset}"` : ''} href="#${char}" />`;
+                x += width + offset;
+                return use;
+            }).join('\n    ');
+
+            // Remove final offset
+            x -= offset;
+
+            // Generate styles
+            const style = `
+                svg {
+                    ${pixelated === '1' ? 'image-rendering: pixelated;' : ''}
+                    ${darkmode === '1' ? 'filter: brightness(.6);' : ''}
+                }
+                ${darkmode === 'auto' ? '@media (prefers-color-scheme: dark) { svg { filter: brightness(.6); } }' : ''}
+            `;
+
+            return `<?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated by Moe Counter (GitHub Pages) -->
+<svg viewBox="0 0 ${x} ${maxHeight}" width="${x}" height="${maxHeight}" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <title>Moe Counter!</title>
+  <style>${style}</style>
+  <defs>
+    ${defs}
+  </defs>
+  <g>
+    ${parts}
+  </g>
+</svg>`;
+        }
+
+        // Handle URL parameters on page load
+        function handleUrlParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            // If this is the counter display page (has num parameter)
+            if (urlParams.has('num')) {
+                displayCounter(urlParams);
+                return;
+            }
+            
+            // Otherwise load the form interface
+            loadThemes();
+        }
+
+        // Display counter based on URL parameters
+        async function displayCounter(urlParams) {
+            document.body.innerHTML = '<div id="counter-display" style="margin: 0; padding: 0;"></div>';
+            
+            const params = {
+                num: urlParams.get('num') || '0',
+                theme: urlParams.get('theme') || 'moebooru',
+                padding: urlParams.get('padding') || '7',
+                prefix: urlParams.get('prefix') || '',
+                offset: urlParams.get('offset') || '0',
+                align: urlParams.get('align') || 'top',
+                scale: urlParams.get('scale') || '1',
+                pixelated: urlParams.get('pixelated') || '1',
+                darkmode: urlParams.get('darkmode') || 'auto'
+            };
+
+            try {
+                const svg = await generateCounterSVG(params);
+                document.getElementById('counter-display').innerHTML = svg;
+            } catch (error) {
+                document.getElementById('counter-display').innerHTML = `<p>Error: ${error.message}</p>`;
+            }
+        }
+
+        // Generate counter button handler
+        document.getElementById('generate').addEventListener('click', async function() {
+            const params = {
+                num: document.getElementById('num').value,
+                theme: document.getElementById('theme').value,
+                padding: document.getElementById('padding').value,
+                prefix: document.getElementById('prefix').value,
+                offset: document.getElementById('offset').value,
+                align: document.getElementById('align').value,
+                scale: document.getElementById('scale').value,
+                pixelated: document.getElementById('pixelated').checked ? '1' : '0',
+                darkmode: document.getElementById('darkmode').value
+            };
+
+            const messageDiv = document.getElementById('message');
+            messageDiv.innerHTML = '<span class="loading">Generating...</span>';
+
+            try {
+                const svg = await generateCounterSVG(params);
+                
+                // Display result
+                document.getElementById('result_container').innerHTML = svg;
+                
+                // Generate URL
+                const urlParams = new URLSearchParams();
+                Object.entries(params).forEach(([key, value]) => {
+                    if (value !== '' && value !== '0' && !(key === 'padding' && value === '7') && !(key === 'pixelated' && value === '1')) {
+                        urlParams.set(key, value);
+                    }
+                });
+                
+                const currentUrl = new URL(window.location.href);
+                const counterUrl = `${currentUrl.origin}${currentUrl.pathname}?${urlParams.toString()}`;
+                
+                document.getElementById('generated_url').textContent = counterUrl;
+                document.getElementById('generated_url').style.display = 'inline-block';
+                
+                messageDiv.innerHTML = '<span class="success">Counter generated successfully!</span>';
+                
+            } catch (error) {
+                messageDiv.innerHTML = `<span class="error">Error: ${error.message}</span>`;
+                console.error('Error generating counter:', error);
+            }
+        });
+
+        // Initialize page
+        handleUrlParams();
+    </script>
+</body>
+</html>
